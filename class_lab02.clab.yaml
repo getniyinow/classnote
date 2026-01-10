@@ -1,0 +1,35 @@
+
+name: csr-iol-star
+
+topology:
+  kinds:
+    vr-cisco_csr1000v:
+      image: vrnetlab/cisco_csr1000v:16.09.08
+    cisco_iol:
+      image: vrnetlab/cisco_iol:17.15.01
+
+  nodes:
+    R1:
+      kind: vr-cisco_csr1000v
+      ports:
+        - "2002:22"
+#      startup-delay: 120
+
+    R2:
+      kind: vr-cisco_csr1000v
+      ports:
+        - "2003:22"
+      startup-delay: 400
+
+    SW:
+      kind: cisco_iol
+      startup-delay: 200
+      startup-config: /home/ola/cl/classlabs/SW.cfg
+      ports:
+        - "2018:22"
+
+  links:
+    - endpoints: ["R1:eth1", "SW:eth1"]
+    - endpoints: ["R2:eth1", "SW:eth2"]
+    - endpoints: ["R1:eth2", "R2:eth2"]
+
