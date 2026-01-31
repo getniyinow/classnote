@@ -1,0 +1,96 @@
+name: routing-ccna-v1
+mgmt:
+  network: fixedips
+  ipv4-subnet: 10.200.255.0/24
+
+topology:
+  kinds:
+    cisco_vios:
+      image: vrnetlab/cisco_vios:15.9.3M3
+    cisco_csr1000v:
+      image: vrnetlab/cisco_csr1000v:16.09.08
+    ceos:
+      image: ceos:4.32.0F
+    linux:
+      image: alpine:latest
+
+  nodes:
+    R1:
+      kind: cisco_csr1000v
+      mgmt-ipv4: 10.200.255.2
+      ports:
+        - "2002:22"
+    R2:
+      kind: cisco_csr1000v
+      mgmt-ipv4: 10.200.255.3
+      startup-delay: 100
+      ports:
+        - "2003:22"
+    R3:
+      kind: cisco_csr1000v
+      mgmt-ipv4: 10.200.255.4
+      startup-delay: 200
+      ports:
+        - "2004:22"
+    R4:
+      kind: cisco_csr1000v
+      mgmt-ipv4: 10.200.255.5
+      startup-delay: 250
+      ports:
+        - "2005:22"
+    SW:
+      kind: ceos
+      mgmt-ipv4: 10.200.255.18
+      startup-config: /home/ola/cl/lab_configs/SW.cfg
+      ports:
+        - "2018:22"    
+    H1:
+      kind: linux
+      mgmt-ipv4: 10.200.255.101
+      ports:
+        - "2031:22"
+    H2:
+      kind: linux
+      mgmt-ipv4: 10.200.255.102
+      ports:
+        - "2032:22"
+    H3:
+      kind: linux
+      mgmt-ipv4: 10.200.255.103
+      ports:
+        - "2033:22"
+    H4:
+      kind: linux
+      mgmt-ipv4: 10.200.255.104
+      ports:
+        - "2034:22"
+
+#  links:
+#     - endpoints: ["R1:eth1", "SW:eth1"]
+#     - endpoints: ["R2:eth1", "SW:eth2"]
+#     - endpoints: ["R3:eth1", "SW:eth3"]
+#     - endpoints: ["R4:eth1", "SW:eth4"]
+    
+#     - endpoints: ["H1:eth1", "R1:eth2"]
+#     - endpoints: ["H2:eth1", "R2:eth2"]
+#     - endpoints: ["H3:eth1", "R3:eth2"]
+#     - endpoints: ["H4:eth1", "R4:eth2"]
+
+  links:
+    # Router to Switch links (CSR Gi2 maps to eth1)
+    - endpoints: ["R1:Gi2", "SW:eth1"]
+    - endpoints: ["R2:Gi2", "SW:eth2"]
+    - endpoints: ["R3:Gi2", "SW:eth3"]
+    - endpoints: ["R4:Gi2", "SW:eth4"]
+    
+    # Router to Host links (CSR Gi3 maps to eth2)
+    - endpoints: ["H1:eth1", "R1:Gi3"]
+    - endpoints: ["H2:eth1", "R2:Gi3"]
+    - endpoints: ["H3:eth1", "R3:Gi3"]
+    - endpoints: ["H4:eth1", "R4:Gi3"]
+
+
+# Topology Link 	Linux Interface (clab file)	CSR1000v Interface (IOS CLI)
+# Management	eth0 (Implicit)	GigabitEthernet1
+# Link to SW	eth1	GigabitEthernet2
+# Link to Host	eth2	GigabitEthernet3
